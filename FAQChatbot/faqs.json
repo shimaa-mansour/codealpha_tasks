@@ -1,0 +1,15 @@
+[
+  {"question": "What is CodeAlpha?", "answer": "CodeAlpha is a software development company that offers internships in fields like AI, web development, and data science."},
+  {"question": "How do I apply for an internship?", "answer": "Fill out the registration form on the CodeAlpha website. You will then receive an offer letter by email within 48 hours."},
+  {"question": "How long is the internship?", "answer": "Each internship batch runs for one month, for example from 1st November to 30th November."},
+  {"question": "Do I get a certificate after the internship?", "answer": "Yes. After submitting your tasks you receive a QR-verified completion certificate with a unique ID."},
+  {"question": "Will I get a letter of recommendation?", "answer": "Yes, a Letter of Recommendation is issued based on your performance after you submit the tasks."},
+  {"question": "How many tasks do I need to complete?", "answer": "You must complete at least 2 tasks out of the 4 listed. Submitting only one task is considered incomplete."},
+  {"question": "Where do I upload my code?", "answer": "Upload your code to GitHub in a repository named CodeAlpha_ProjectName. Google Drive is also accepted for beginners."},
+  {"question": "How do I submit my tasks?", "answer": "Use the official submission form shared in the WhatsApp group before the deadline."},
+  {"question": "What is the submission deadline?", "answer": "The deadline is 30th November at 11:59 PM. No extensions are provided."},
+  {"question": "I did not receive my offer letter, what should I do?", "answer": "Download it from the CodeAlpha website using the same email you registered with. It is available 48 hours after registration."},
+  {"question": "Is the internship paid?", "answer": "No, the internship is unpaid. It focuses on practical experience, a certificate, and a recommendation letter."},
+  {"question": "Do I need to post on LinkedIn?", "answer": "Yes. Follow the CodeAlpha page, tag @CodeAlpha, use the hashtag #CodeAlpha, and post a video explaining your project."},
+  {"question": "How can I contact support?", "answer": "You can contact CodeAlpha through WhatsApp or by email at services@codealpha.tech."}
+]
