@@ -40,4 +40,4 @@ requirements.txt
 ```
 
 ## Author
-Your Name
+Shimaa Mansour
