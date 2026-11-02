@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>World Translator</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+<style>
+  :root{--bg1:#0b1220;--bg2:#13294b;--card:#ffffff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--panel:#f8fafc;--brand:#2563eb;--brand2:#06b6d4;--danger:#dc2626}
+  @media (prefers-color-scheme: dark){:root{--card:#111a2e;--text:#e5edf9;--muted:#8da2c0;--line:#22324f;--panel:#0d1526}}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;color:var(--text);
+    background:radial-gradient(circle at 20% 0%,#1d4ed8 0,transparent 40%),radial-gradient(circle at 90% 30%,#0891b2 0,transparent 35%),linear-gradient(160deg,var(--bg1),var(--bg2));
+    padding:32px 16px;display:flex;flex-direction:column;align-items:center}
+  header{text-align:center;color:#fff;margin-bottom:26px}
+  .globe{width:84px;height:84px;margin:0 auto 10px;filter:drop-shadow(0 6px 18px #06b6d488)}
+  .globe .m{transform-origin:50px 50px;animation:spin 6s linear infinite}
+  .globe .m:nth-of-type(2){animation-delay:-2s}.globe .m:nth-of-type(3){animation-delay:-4s}
+  @keyframes spin{0%{transform:scaleX(1)}50%{transform:scaleX(.05)}100%{transform:scaleX(1)}}
+  @media (prefers-reduced-motion: reduce){.globe .m{animation:none}}
+  h1{margin:0;font-size:30px;letter-spacing:.3px}
+  header p{margin:6px 0 0;color:#c7d8f3;font-size:15px}
+  .card{width:100%;max-width:980px;background:var(--card);border-radius:18px;box-shadow:0 20px 50px #0006;overflow:hidden}
+  .grid{display:grid;grid-template-columns:1fr auto 1fr}
+  .panel{padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+  .head{display:flex;align-items:center;gap:8px}
+  .head label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+  select{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:var(--panel);color:var(--text);min-width:0}
+  select:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:1px}
+  textarea,.out{width:100%;height:230px;padding:14px;border:1px solid var(--line);border-radius:12px;font-size:17px;line-height:1.6;background:var(--panel);color:var(--text);font-family:inherit;resize:none}
+  .out{overflow-y:auto;white-space:pre-wrap}
+  .out.empty{color:var(--muted)}
+  .meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);min-height:36px}
+  .mid{display:flex;align-items:center;padding:0 4px;border-left:1px solid var(--line);border-right:1px solid var(--line);background:var(--panel)}
+  button{border:0;cursor:pointer;font-size:14px;font-family:inherit;border-radius:10px}
+  .swap{width:40px;height:40px;margin:0 6px;background:var(--card);color:var(--brand);border:1px solid var(--line);font-size:18px;transition:transform .3s}
+  .swap:hover{transform:rotate(180deg)}
+  .ghost{background:transparent;color:var(--muted);padding:7px 11px;border:1px solid var(--line)}
+  .ghost:hover:not(:disabled){color:var(--brand);border-color:var(--brand)}
+  .ghost:disabled{opacity:.45;cursor:default}
+  .bar{display:flex;align-items:center;gap:12px;padding:14px 18px;border-top:1px solid var(--line);background:var(--panel)}
+  .primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;padding:12px 30px;font-weight:600;font-size:15px;box-shadow:0 6px 16px #2563eb55}
+  .primary:disabled{opacity:.6;cursor:wait}
+  #msg{color:var(--danger);font-size:14px;flex:1}
+  footer{margin-top:20px;color:#9fb4d6;font-size:13px;text-align:center}
+  @media (max-width:760px){.grid{grid-template-columns:1fr}.mid{justify-content:center;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px}.swap{transform:rotate(90deg)}.swap:hover{transform:rotate(270deg)}textarea,.out{height:160px}}
+</style>
+</head>
+<body>
+<header>
+  <svg class="globe" viewBox="0 0 100 100" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+    <circle cx="50" cy="50" r="44" fill="#ffffff14"/>
+    <ellipse class="m" cx="50" cy="50" rx="44" ry="44"/>
+    <ellipse class="m" cx="50" cy="50" rx="44" ry="44"/>
+    <ellipse class="m" cx="50" cy="50" rx="44" ry="44"/>
+    <path d="M6 50h88M12 28h76M12 72h76" stroke-width="1.8" opacity=".75"/>
+    <path d="M50 6v88" stroke-width="1.8" opacity=".75"/>
+  </svg>
+  <h1>World Translator</h1>
+  <p>Break language barriers. Translate between {{ languages|length }}+ languages instantly.</p>
+</header>
+
+<main class="card">
+  <div class="grid">
+    <section class="panel">
+      <div class="head">
+        <label for="source">From</label>
+        <select id="source">
+          <option value="auto">Detect language</option>
+          {% for name, code in languages %}<option value="{{ code }}">{{ name.title() }}</option>{% endfor %}
+        </select>
+      </div>
+      <textarea id="text" dir="auto" maxlength="5000" placeholder="Type or paste your text here..."></textarea>
+      <div class="meta"><span id="count">0 / 5000</span><button class="ghost" id="clearBtn">✕ Clear</button></div>
+    </section>
+
+    <div class="mid"><button class="swap" id="swap" title="Swap languages" aria-label="Swap languages">⇄</button></div>
+
+    <section class="panel">
+      <div class="head">
+        <label for="target">To</label>
+        <select id="target">
+          {% for name, code in languages %}<option value="{{ code }}" {% if code == 'ar' %}selected{% endif %}>{{ name.title() }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="out empty" id="output" dir="auto" aria-live="polite">Translation will appear here</div>
+      <div class="meta"><span></span>
+        <span style="display:flex;gap:8px">
+          <button class="ghost" id="speakBtn" disabled>🔊 Listen</button>
+          <button class="ghost" id="copyBtn" disabled>📋 Copy</button>
+        </span>
+      </div>
+    </section>
+  </div>
+  <div class="bar">
+    <div id="msg"></div>
+    <button class="primary" id="translateBtn">Translate</button>
+  </div>
+</main>
+<footer>CodeAlpha AI Internship · Task 1 · Built by Shimaa Mansour &nbsp;|&nbsp; Tip: press Ctrl + Enter to translate</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const text = $('text'), output = $('output'), msg = $('msg');
+const PLACEHOLDER = 'Translation will appear here';
+let last = '';
+
+function setResult(t){
+  last = t || '';
+  output.textContent = last || PLACEHOLDER;
+  output.classList.toggle('empty', !last);
+  $('copyBtn').disabled = $('speakBtn').disabled = !last;
+}
+
+text.addEventListener('input', () => $('count').textContent = text.value.length + ' / 5000');
+
+async function translate(){
+  msg.textContent = '';
+  if(!text.value.trim()){ msg.textContent = 'Please enter some text to translate.'; return; }
+  const btn = $('translateBtn');
+  btn.disabled = true; btn.textContent = 'Translating...';
+  try{
+    const res = await fetch('/translate', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({text: text.value, source: $('source').value, target: $('target').value})});
+    const data = await res.json();
+    if(!res.ok){ msg.textContent = data.error; setResult(''); } else setResult(data.translation);
+  }catch(e){ msg.textContent = 'Network error. Please try again.'; setResult(''); }
+  btn.disabled = false; btn.textContent = 'Translate';
+}
+
+$('translateBtn').onclick = translate;
+text.addEventListener('keydown', e => { if(e.ctrlKey && e.key === 'Enter') translate(); });
+
+$('clearBtn').onclick = () => { text.value=''; $('count').textContent='0 / 5000'; msg.textContent=''; setResult(''); text.focus(); };
+
+$('swap').onclick = () => {
+  const s = $('source'), t = $('target');
+  if(s.value === 'auto') return;
+  [s.value, t.value] = [t.value, s.value];
+  if(last){ text.value = last; $('count').textContent = text.value.length + ' / 5000'; setResult(''); }
+};
+
+$('copyBtn').onclick = async () => {
+  if(!last) return;
+  try{ await navigator.clipboard.writeText(last); $('copyBtn').textContent='✅ Copied';
+    setTimeout(()=>$('copyBtn').textContent='📋 Copy',1500);}catch(e){ msg.textContent='Could not copy.'; }
+};
+
+$('speakBtn').onclick = () => {
+  if(!last) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(last); u.lang = $('target').value;
+  speechSynthesis.speak(u);
+};
+</script>
+</body>
+</html>
